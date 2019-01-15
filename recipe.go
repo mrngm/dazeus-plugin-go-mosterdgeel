@@ -124,5 +124,5 @@ func (rc *RecipeContent) String() string {
 		fmt.Printf("error: %v", err)
 		return ""
 	}
-	return fmt.Sprintf("%+v", r.Bereidingswijze)
+	return fmt.Sprintf("%s", strings.Join(r.Bereidingswijze, ", "))
 }

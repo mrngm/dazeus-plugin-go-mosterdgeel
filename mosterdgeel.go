@@ -31,24 +31,32 @@ func main() {
 		panic(hlerr)
 	}
 
-	_, err = dz.SubscribeCommand("mosterdgeel", dazeus.NewUniversalScope(), func(ev dazeus.Event) {
-		res, err := GetPossibleRecipes(ev)
-		if err != nil {
-			ev.Reply(fmt.Sprintf("E_MOSTERD: %v", err), true)
-			return
-		}
-		recipe, err := GetRecipe(res)
-		if err != nil {
-			ev.Reply(fmt.Sprintf("E_MOSTERD: %v", err), true)
-			return
-		}
-
-		ev.Reply(recipe.Content.String(), true)
-	})
+	_, err = dz.SubscribeCommand("mosterdgeel", dazeus.NewUniversalScope(), HandleRecept)
+	_, err = dz.SubscribeCommand("recept", dazeus.NewUniversalScope(), HandleRecept)
 	if err != nil {
 		panic(err)
 	}
 
 	listenerr := dz.Listen()
 	panic(listenerr)
+}
+
+func HandleRecept(ev dazeus.Event) {
+	res, err := GetPossibleRecipes(ev)
+	if err != nil {
+		ev.Reply(fmt.Sprintf("E_MOSTERD: %v", err), true)
+		return
+	}
+	recipe, err := GetRecipe(res)
+	if err != nil {
+		ev.Reply(fmt.Sprintf("E_MOSTERD: %v", err), true)
+		return
+	}
+
+	if len(recipe.Content.String()) > 200 {
+		ev.Reply(fmt.Sprintf("Heb je het mooie design van Mosterdgeel al eens gezien? Hier is je recept: %s", recipe.Link), true)
+		return
+	}
+
+	ev.Reply(recipe.Content.String(), true)
 }
