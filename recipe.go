@@ -74,6 +74,27 @@ func GetPossibleRecipes(ev dazeus.Event) (int, error) {
 	return rID, nil
 }
 
+func GetAllRecipes(ev dazeus.Event) ([]Recipe, error) {
+	var rs []Recipe
+
+	url := "https://mosterdgeel.nl/wp-json/wp/v2/posts?_fields[]=title.rendered&_fields[]=id&_fields=link&per_page=100"
+	resp, err := http.Get(url)
+	if err != nil {
+		return rs, err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return rs, err
+	}
+
+	if err := json.Unmarshal(body, &rs); err != nil {
+		return rs, err
+	}
+
+	return rs, nil
+}
+
 func GetRecipe(rID int) (Recipe, error) {
 	var r Recipe
 
